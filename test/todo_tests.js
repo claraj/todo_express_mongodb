@@ -73,6 +73,7 @@ describe('open and empty test db before and close db after ', () => {
     
     it('should return 404 on GET to task/ID if id is not found', (done) => {
       
+      /// todo 3 separate tests
       chai.request(server)
         .get('/task/')
         .end((err, res) => {
@@ -93,6 +94,45 @@ describe('open and empty test db before and close db after ', () => {
         });
       
     });
+    
+    
+    // TODO add task
+    
+    it('should add a new task to the database on POST to /add', (done) => {
+  
+      chai.request(server)
+        .post('/add')
+        .send( { text: 'water plants' } )
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.text).to.include('water plants');
+      
+          tasks.find().toArray().then( (docs) => {
+            expect(docs.length).to.equal(1);
+            var doc = docs[0];
+            expect(doc).to.have.property('text').equal('water plants');
+            expect(doc).to.have.property('completed').equal(false);
+            return done();
+          });
+        });
+    });
+  
+  
+    it('should NOT add a new task to the database on POST to /add and display a flash error ', (done) => {
+  
+      chai.request(server)
+        .post('/add')
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.text).to.include('No tasks to do!');
+  
+          tasks.find().count().then( (count) => {
+            expect(count).to.equal(0);
+            return done();
+          });
+        });
+    });
+  
     
   });  // End of describe('task tests with empty db')
   
@@ -162,8 +202,8 @@ describe('open and empty test db before and close db after ', () => {
           done();
         });
     });
-  
-  
+    
+    
     it('should show a completed tasks details on GET to /task/ID, and no done button', (done) => {
       
       chai.request(server)
@@ -177,7 +217,7 @@ describe('open and empty test db before and close db after ', () => {
         });
     });
     
-
+    
     it('should mark a task as done on POST to /done body._id', (done) => {
       chai.request(server)
         .post('/done')
@@ -186,7 +226,7 @@ describe('open and empty test db before and close db after ', () => {
           expect(res.status).to.equal(200);
           // should be redirected home
           expect(res.text).to.not.include('walk dog');
-      
+          
           // check the DB
           tasks.findOne({_id: ObjectID(walk_dog._id)}).then((doc) => {
             expect(doc.completed).to.be.true;
@@ -195,57 +235,50 @@ describe('open and empty test db before and close db after ', () => {
               .get('/completed')
               .send({'_id': walk_dog._id})
               .end((err, res) => {
-                  expect(res.text).to.include('walk dog');
-                  return done();
+                expect(res.text).to.include('walk dog');
+                return done();
               });
             
           });
         })
       
-      //todo go check the /completed page
-      
     });
     
     
-    it('should not modify any task document on POST to /done if _id is missing or invalid or not found', (done) => {
+    it('should return 404 on POST to /done if _id is missing', (done) => {
+      chai.request(server)
+        .post('/done')
+        .end((err, res) => {
+          expect(res.status).to.equal(404);
+          // TODO check the DB is not modified
+          done();
+        })
+    });
+    
+    
+    it('should return 404 on POST to /done if _id is not a valid _id', (done) => {
       
       chai.request(server)
         .post('/done')
-        
-        // no id
-        
+        .send({'_id': '345345354'})
         .end((err, res) => {
           expect(res.status).to.equal(404);
-          
-          done();  //TODO check the database to ensure no mods tests here
+          // TODO check the DB is not modified
+          done();
         })
       
     });
     
     
-    it('should return 404 on POST to /done if _id is missing, not a valid _id,  or a valid _id not in database', (done) => {
+    it('should return 404 on POST to /done if _id is a valid _id not in database', (done) => {
       chai.request(server)
         .post('/done')
+        .send({'_id' : '1234567890abcdef1234567890'})
         .end((err, res) => {
           expect(res.status).to.equal(404);
-      
-          chai.request(server)
-            .post('/done')
-            .send({'_id': '345345354'})
-            .end((err, res) => {
-              expect(res.status).to.equal(404);
-  
-              chai.request(server)
-                .post('/done')
-                .send({'_id' : '1234567890abcdef1234567890'})
-                .end((err, res) => {
-                  expect(res.status).to.equal(404);
-                  return done();
-                })
-            })
-          
-        })
-  
+          // TODO check the DB is not modified
+          return done();
+        });
     });
     
     
@@ -267,14 +300,14 @@ describe('open and empty test db before and close db after ', () => {
             })
             
           })
-            
-            
+          
+          
           
           
         })
     });
     
-  
+    
     it('should return 404 on POST to /delete a task document with invalid _id', (done) => {
       chai.request(server)
         .post('/delete')
@@ -295,7 +328,7 @@ describe('open and empty test db before and close db after ', () => {
         .send({ '_id' : '123456123456123456123456'})   //valid but doesn't exist
         .end((err, res) => {
           expect(res.status).to.equal(404);
-           tasks.find().count().then( (count) => {
+          tasks.find().count().then( (count) => {
             expect(count).to.equal(3);
             return done();
           })
@@ -315,10 +348,10 @@ describe('open and empty test db before and close db after ', () => {
           
         });
     });
-  
-  
-    it('should mark all tasks as done on POST to /allDone', (done) => {
     
+    
+    it('should mark all tasks as done on POST to /allDone', (done) => {
+      
       chai.request(server)
         .post('/allDone')
         .end((err, res) => {
@@ -328,14 +361,12 @@ describe('open and empty test db before and close db after ', () => {
             expect(count).to.equal(3);
             return done();
           })
-        
+          
         });
     });
     
   });
   
-  
- 
   
   
 });   // end of outer describe
