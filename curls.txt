@@ -1,0 +1,5 @@
+curl -X POST --data "_id=123456123456123456123456" http://127.0.0.1:3000/done
+
+curl -X POST --data "text=cat" http://127.0.0.1:3000/add
+
+curl -X POST --data "_id=123456123456123456123456" http://127.0.0.1:3000/delete

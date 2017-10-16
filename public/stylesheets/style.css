@@ -1,0 +1,51 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.error_msg {
+  color:red;
+}
+
+.info_msg {
+  color: blueviolet;
+}
+
+#addtask_text {
+  width: 50%;
+}
+
+.navigation {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.delete_form, .done_form {
+  display: inline;
+}
+
+.done_button {
+  background-color: aqua;
+}
+
+.delete_button {
+  background-color: red;
+  color:white;
+}
+
+.all_done_button {
+  background-color: blueviolet;
+  color: white;
+}
+
+.alldone {
+  padding-top: 20px;
+}
+
+.delete_task {
+  padding-top: 20px;
+}
