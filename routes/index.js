@@ -20,20 +20,27 @@ router.get('/task/:_id', function(req, res, next) {
   
   _id = req.params._id;
   
-  req.tasks.findOne( { _id : ObjectID(_id)} )
-    .then( (doc) => {
-      if (doc == null) {
-        var notFound = Error('Not found');
-        notFound.status = 404;
-         next(notFound);
-      } else {
-        res.render('task', {title: 'Task', task: doc});
-      }
-    })
-    .catch( (err) => {
-      next(err);
-    })
+  if (!ObjectID.isValid(_id)) {
+    var notFound = Error('Not found');
+    notFound.status = 404;
+    next(notFound);
+  }
   
+  else {
+    req.tasks.findOne({_id: ObjectID(_id)})
+      .then((doc) => {
+        if (doc == null) {
+          var notFound = Error('Not found');
+          notFound.status = 404;
+          next(notFound);
+        } else {
+          res.render('task', {title: 'Task', task: doc});
+        }
+      })
+      .catch((err) => {
+        next(err);
+      })
+  }
 });
 
 
@@ -76,20 +83,30 @@ router.post('/add', function(req, res, next){
 /* POST task done */
 router.post('/done', function(req, res, next){
   
-  req.tasks.findOneAndUpdate( { _id : ObjectID(req.body._id) }, { $set : { completed: true }} )
-    .then((result) => {
-      // count how many things were updated. Expect to be 1.
-      if (result.lastErrorObject.n === 1) {
-        res.redirect('/');
-      } else {
-        // The task was not found. Report 404 error.
-        var notFound = Error('Task not found');
-        notFound.status = 404;
-        next(notFound);
-      }})
-    .catch((err) => {
-      next(err);        // For database errors, or malformed ObjectIDs.
-    });
+  if (!ObjectID.isValid(req.body._id)) {
+    var notFound = Error('Not found');
+    notFound.status = 404;
+    next(notFound);
+  }
+  
+  else {
+    req.tasks.findOneAndUpdate({_id: ObjectID(req.body._id)}, {$set: {completed: true}})
+      .then((result) => {
+        // count how many things were updated. Expect to be 1.
+        if (result.lastErrorObject.n === 1) {
+          res.redirect('/');
+        } else {
+          // The task was not found. Report 404 error.
+          var notFound = Error('Task not found');
+          notFound.status = 404;
+          next(notFound);
+        }
+      })
+      .catch((err) => {
+        next(err);        // For database errors, or malformed ObjectIDs.
+      });
+  }
+  
 });
 
 /* POST all tasks done */
@@ -109,20 +126,28 @@ router.post('/alldone', function(req, res, next) {
 /* POST task delete */
 router.post('/delete', function(req, res, next){
   
-  req.tasks.findOneAndDelete( { _id : ObjectID(req.body._id) } )
-    .then( (result) => {
-      if (result.lastErrorObject.n === 1) {
-        res.redirect('/');
-      } else {
-        // The task was not found. Report 404 error.
-        var notFound = Error('Task not found');
-        notFound.status = 404;
-        next(notFound);
-      }
-    })
-    .catch( (err) => {
-      next(err);
-    });
+  if (!ObjectID.isValid(req.body._id)) {
+    var notFound = Error('Not found');
+    notFound.status = 404;
+    return next(notFound);
+  }
+  
+  else {
+    req.tasks.findOneAndDelete({_id: ObjectID(req.body._id)})
+      .then((result) => {
+        if (result.lastErrorObject.n === 1) {
+          res.redirect('/');
+        } else {
+          // The task was not found. Report 404 error.
+          var notFound = Error('Task not found');
+          notFound.status = 404;
+          next(notFound);
+        }
+      })
+      .catch((err) => {
+        next(err);
+      });
+  }
   
 });
 
