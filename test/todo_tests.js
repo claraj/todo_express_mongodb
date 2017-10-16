@@ -1,28 +1,39 @@
-//process.env.NODE_ENV = 'test';
+// Utility modules
+
+let _ = require('lodash');
+
+
+// Chai config
 
 let chai = require('chai');
 let chaiHTTP = require('chai-http');
 let server = require('../app');
-let expect = chai.expect;  // don't call function
+let expect = chai.expect;
 
-let _ = require('lodash');
+chai.use(chaiHTTP);
+
+
+// Database setup
 
 let mongodb = require('mongodb');
 let ObjectID = mongodb.ObjectID;
 
-let test_db_url = process.env.MONGO_URL;  //todo NOT the real database!
-//'mongodb://127.0.0.1:27017/test_task';
-
-chai.use(chaiHTTP);
-
-// Describe doesn't seem to like to live inside a mongo connect callback .
+let config = require('config');
 
 
+// On your own computer, if can set environment variables
+// Set the environment variable MONGO_URL to the correct URL
+// If you can't set environment variables on your system, replace
+// process.env.MONGO_URL with the actual URL string
+let test_db_url = process.env.MONGO_URL;  // TODO replace this with a test database, NOT the real database!
+
+
+// Tests!
 
 describe('open and empty test db before and close db after ', () => {
   
-  var tasks;
-  var db;
+  let tasks;
+  let db;
   
   beforeEach('get task collection and delete all docs', function (done) {
     

@@ -9,12 +9,11 @@ var session = require('express-session');
 
 var MongoClient = require('mongodb').MongoClient;
 
+// On your own computer, if can set environment variables
 // Set the environment variable MONGO_URL to the correct URL
 // If you can't set environment variables on your system, replace
 // process.env.MONGO_URL with the actual URL string
 var db_url = process.env.MONGO_URL;
-
-console.log(db_url)
 
 var index = require('./routes/index');
 
