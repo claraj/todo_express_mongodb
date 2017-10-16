@@ -257,7 +257,7 @@ describe('open and empty test db before and close db after ', () => {
           expect(res.status).to.equal(200);
           expect(res.req.path).to.equal('/');
           expect(res.text).not.to.contain('oil change');
-          tasks.findOne({_id : _id}).then((doc) => {
+          tasks.findOne({_id : ObjectID(oil_change._id) } ).then((doc) => {
             expect(doc).to.be.null;
           }).then( () => {
             

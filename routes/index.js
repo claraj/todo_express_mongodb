@@ -18,7 +18,7 @@ router.get('/', function(req, res, next) {
 /* GET details about one task */
 router.get('/task/:_id', function(req, res, next) {
   
-  _id = req.params._id;
+  var _id = req.params._id;
   
   if (!ObjectID.isValid(_id)) {
     var notFound = Error('Not found');
@@ -83,14 +83,16 @@ router.post('/add', function(req, res, next){
 /* POST task done */
 router.post('/done', function(req, res, next){
   
-  if (!ObjectID.isValid(req.body._id)) {
+  var _id = req.body._id;
+  
+  if (!ObjectID.isValid(_id)) {
     var notFound = Error('Not found');
     notFound.status = 404;
     next(notFound);
   }
   
   else {
-    req.tasks.findOneAndUpdate({_id: ObjectID(req.body._id)}, {$set: {completed: true}})
+    req.tasks.findOneAndUpdate({_id: ObjectID(_id)}, {$set: {completed: true}})
       .then((result) => {
         // count how many things were updated. Expect to be 1.
         if (result.lastErrorObject.n === 1) {
@@ -126,14 +128,16 @@ router.post('/alldone', function(req, res, next) {
 /* POST task delete */
 router.post('/delete', function(req, res, next){
   
-  if (!ObjectID.isValid(req.body._id)) {
+  var _id = req.body._id;
+  
+  if (!ObjectID.isValid(_id)) {
     var notFound = Error('Not found');
     notFound.status = 404;
-    return next(notFound);
+    next(notFound);
   }
   
   else {
-    req.tasks.findOneAndDelete({_id: ObjectID(req.body._id)})
+    req.tasks.findOneAndDelete( { _id: ObjectID(_id)} )
       .then((result) => {
         if (result.lastErrorObject.n === 1) {
           res.redirect('/');
