@@ -18,14 +18,14 @@ chai.use(chaiHTTP);
 let mongodb = require('mongodb');
 let ObjectID = mongodb.ObjectID;
 
-let config = require('config');
+//let config = require('config');
 
 
 // On your own computer, if can set environment variables
 // Set the environment variable MONGO_URL to the correct URL
 // If you can't set environment variables on your system, replace
 // process.env.MONGO_URL with the actual URL string
-let test_db_url = process.env.MONGO_URL;  // TODO replace this with a test database, NOT the real database!
+let test_db_url = process.env.MONGO_URL;  // TODO replace this with a test database, not a test collection
 
 
 // Tests!
@@ -60,7 +60,7 @@ describe('open and empty test db before and close db after ', () => {
   
   describe("task tests with empty database", function() {
     
-    it('No task message on home page when db is empty', function(done) {
+    it('Should show a "No task" message on home page when db is empty', function(done) {
       chai.request(server)
         .get('/')
         .end((err, res) => {
